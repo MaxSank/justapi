@@ -7,3 +7,6 @@ class Record(models.Model):
     number = models.FloatField('Number')
     text = models.TextField('Text', max_length=500)
     list = models.TextField('List', max_length=500)
+
+    def __str__(self):
+        return self.name
