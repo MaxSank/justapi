@@ -4,10 +4,8 @@ import mysql.connector
 from mysql.connector import Error
 
 
-"""Connect with MySQL DB"""
-
-
 def do_connection():
+    """Connect with MySQL DB"""
     environ.Env.read_env()
     host = os.environ.get('MySQL_host')
     database = os.environ.get('MySQL_database')
@@ -23,16 +21,13 @@ def do_connection():
     return connection
 
 
-"""Connect, execute queries, close connection
-'single' = cursor.execute()
-'many' = cursor.executemany()
-'data' = insert/update data
-'no data' = default value of data_to_insert
-'fetchall' = fetch all data from db, default value of data_to_insert
-"""
-
-
 def execute_sql_queries(single_or_many, sql_querie, take_give_ot_not, data_to_insert=None):
+    """Connect, execute queries, close connection
+    'single' = cursor.execute()
+    'many' = cursor.executemany()
+    'data' = insert/update data
+    'no data' = default value of data_to_insert
+    'fetchall' = fetch all data from db, default value of data_to_insert"""
     connection = None
     cursor = None
     information = None

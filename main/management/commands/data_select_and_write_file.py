@@ -1,4 +1,3 @@
-import ast
 from datetime import datetime
 import yaml
 from mysql.connector import Error
@@ -6,14 +5,8 @@ from django.core.management.base import BaseCommand
 from main.management.commands.module import do_connection
 
 
-select_querie = """SELECT name, time, number, text, list
-                FROM main_record"""
-
-
-"""Connect and select data from MySQL DB"""
-
-
 def select_from_mysql(sql_command):
+    """Connect and select data from MySQL DB"""
     connection = None
     cursor = None
     result = []
@@ -36,20 +29,16 @@ def select_from_mysql(sql_command):
             return result
 
 
-"""Literal evaluate list"""
-
-
 def prepare_data(data_from_db):
+    """Parse string, convert to list type"""
     for element in data_from_db:
-        new_list = ast.literal_eval(element['list'])
+        new_list = [int(el) for el in element['list'].lstrip('[').rstrip(']').split(', ')]
         element['list'] = new_list
     return data_from_db
 
 
-"""Write data from MySQL to another yaml file"""
-
-
 def write_to_new_yaml(prepared_list):
+    """Write data from MySQL to another yaml file"""
     with open('data2.yaml', 'w') as file:
         yaml.dump(prepared_list, file, default_flow_style=False)
 
@@ -57,6 +46,9 @@ def write_to_new_yaml(prepared_list):
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        data = select_from_mysql(select_querie)
+        select_query = """SELECT name, time, number, text, list
+                        FROM main_record"""
+
+        data = select_from_mysql(select_query)
         data = prepare_data(data)
         write_to_new_yaml(data)

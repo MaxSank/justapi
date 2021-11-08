@@ -5,10 +5,9 @@ import datetime
 import yaml
 from django.core.management.base import BaseCommand
 
-"""Get names for Records"""
-
 
 def get_names():
+    """Get names for Records"""
     r = requests.get('https://en.wikipedia.org/wiki/List_of_culinary_fruits')
     soup = BeautifulSoup(r.text, features="html.parser")
     table = soup.findAll('tbody')[0].findAll('a')[3:]
@@ -18,10 +17,8 @@ def get_names():
     return names_list
 
 
-"""Create list for writing in YAML-file"""
-
-
 def create_list(lst_of_names):
+    """Create list for writing in YAML-file"""
     final_list = []
     for element in lst_of_names:
         dct = {
@@ -42,15 +39,10 @@ def create_list(lst_of_names):
     return final_list
 
 
-"""Write data to YAML-file"""
-
-
 def write_to_yaml(prepared_lst):
+    """Write data to YAML-file"""
     with open('data.yaml', 'w') as file:
         yaml.dump(prepared_lst, file, default_flow_style=False)
-
-
-"""Management command"""
 
 
 class Command(BaseCommand):
