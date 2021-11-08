@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 import yaml
 from mysql.connector import Error
@@ -16,16 +17,16 @@ def select_from_mysql(sql_command):
             cursor = connection.cursor(dictionary=True)
             cursor.execute(sql_command)
             result = cursor.fetchall()
-            print(result)
+            logging.info(result)
             connection.commit()
-            print(f'Command: {sql_command}\nResult: successfully')
+            logging.info(f'Command: {sql_command}\nResult: successfully')
     except Error as e:
-        print("Error while connecting to MySQL: ", e)
+        logging.error("Error while connecting to MySQL: ", e)
     finally:
         if connection.is_connected():
             cursor.close()
             connection.close()
-            print('Connection is closed')
+            logging.info('Connection is closed')
             return result
 
 
@@ -46,6 +47,7 @@ def write_to_new_yaml(prepared_list):
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        logging.basicConfig(level=logging.INFO)
         select_query = """SELECT name, time, number, text, list
                         FROM main_record"""
 

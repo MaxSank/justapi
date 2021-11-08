@@ -1,3 +1,4 @@
+import logging
 import os
 import environ
 import mysql.connector
@@ -28,6 +29,7 @@ def execute_sql_queries(single_or_many, sql_querie, take_give_ot_not, data_to_in
     'data' = insert/update data
     'no data' = default value of data_to_insert
     'fetchall' = fetch all data from db, default value of data_to_insert"""
+    logging.basicConfig(level=logging.INFO)
     connection = None
     cursor = None
     information = None
@@ -50,16 +52,16 @@ def execute_sql_queries(single_or_many, sql_querie, take_give_ot_not, data_to_in
                 information = cursor.fetchall()
 
                 information = information.copy()
-                print(information)
+                logging.info(information)
 
             connection.commit()
-            print(f'Command: {sql_querie}\nResult: successfully')
+            logging.info(f'Command: {sql_querie}\nResult: successfully')
 
     except Error as e:
-        print("Error while connecting to MySQL: ", e)
+        logging.error("Error while connecting to MySQL: ", e)
     finally:
         if connection.is_connected():
             cursor.close()
             connection.close()
-            print('Connection is closed')
+            logging.info('Connection is closed')
             return information
