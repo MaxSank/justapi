@@ -1,17 +1,11 @@
+from typing import List
 import random
 import yaml
 from django.core.management.base import BaseCommand
 from main.management.commands.module import execute_sql_queries
 
-"""MySQL command for insert data to DB"""
 
-mysql_command = """INSERT INTO main_record
-                (name, time, number, text, list)
-                VALUES (%(name)s, %(time)s, %(number)s, %(text)s, %(list)s);
-                """
-
-
-def read_yaml_file():
+def read_yaml_file() -> List[dict]:
     """Load data from yaml-file"""
     with open('data.yaml', 'r') as file:
         """calling yaml.load() without Loader=... is deprecated,
@@ -20,7 +14,7 @@ def read_yaml_file():
     return data
 
 
-def processing_list(data_list):
+def processing_list(data_list: List[dict]) -> None:
     """Processing lists inside elements (dicts) of data,
     sort and delete minimal and maximal numbers in lists."""
     for element in data_list:
@@ -33,7 +27,7 @@ def processing_list(data_list):
                 element.update({'list': str(element[parts])})
 
 
-def processing_numbers(data_list):
+def processing_numbers(data_list: List[dict]) -> None:
     """Processing numbers"""
     for element in data_list:
         for parts in element:
@@ -41,13 +35,13 @@ def processing_numbers(data_list):
                 element[parts] = str(round(element[parts] + 1, 2))
 
 
-def processing_text(data_list):
+def processing_text(data_list: List[dict]) -> None:
     """Delete space in the end of text"""
     for element in data_list:
         element['text'] = element['text'].rstrip()
 
 
-def processing_datetime(data_list):
+def processing_datetime(data_list: List[dict]) -> None:
     """Change month in datetime"""
     for element in data_list:
         element['time'] = element['time'].replace(month=random.randint(1, 12))
@@ -57,11 +51,18 @@ def processing_datetime(data_list):
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        """MySQL command for insert data to DB"""
+
+        mysql_command = """INSERT INTO main_record
+                        (name, time, number, text, list)
+                        VALUES (%(name)s, %(time)s, %(number)s, %(text)s, %(list)s);
+                        """
+
         data_from_file = read_yaml_file()
         processing_list(data_from_file)
         processing_numbers(data_from_file)
         processing_text(data_from_file)
         processing_datetime(data_from_file)
 
-        # Insert data with def from module
+        """Insert data with def from module"""
         execute_sql_queries('many', mysql_command, 'data', data_from_file)

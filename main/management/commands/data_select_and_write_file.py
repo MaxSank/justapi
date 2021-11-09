@@ -1,3 +1,4 @@
+from typing import List
 import logging
 from datetime import datetime
 import yaml
@@ -6,7 +7,7 @@ from django.core.management.base import BaseCommand
 from main.management.commands.module import do_connection
 
 
-def select_from_mysql(sql_command):
+def select_from_mysql(sql_command: str) -> List[dict]:
     """Connect and select data from MySQL DB"""
     connection = None
     cursor = None
@@ -30,7 +31,7 @@ def select_from_mysql(sql_command):
             return result
 
 
-def prepare_data(data_from_db):
+def prepare_data(data_from_db: List[dict]) -> List[dict]:
     """Parse string, convert to list type"""
     for element in data_from_db:
         new_list = [int(el) for el in element['list'].lstrip('[').rstrip(']').split(', ')]
@@ -38,7 +39,7 @@ def prepare_data(data_from_db):
     return data_from_db
 
 
-def write_to_new_yaml(prepared_list):
+def write_to_new_yaml(prepared_list: List[dict]) -> None:
     """Write data from MySQL to another yaml file"""
     with open('data2.yaml', 'w') as file:
         yaml.dump(prepared_list, file, default_flow_style=False)

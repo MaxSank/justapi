@@ -1,3 +1,4 @@
+from typing import Optional, List
 import logging
 import os
 import environ
@@ -22,7 +23,7 @@ def do_connection():
     return connection
 
 
-def execute_sql_queries(single_or_many, sql_querie, take_give_ot_not, data_to_insert=None):
+def execute_sql_queries(single_or_many, sql_query, take_give_ot_not, data_to_insert=None) -> Optional[List[tuple]]:
     """Connect, execute queries, close connection
     'single' = cursor.execute()
     'many' = cursor.executemany()
@@ -42,20 +43,20 @@ def execute_sql_queries(single_or_many, sql_querie, take_give_ot_not, data_to_in
             cursor = connection.cursor()
 
             if single_or_many == 'single' and take_give_ot_not == 'data':
-                cursor.execute(sql_querie, data_to_insert)
+                cursor.execute(sql_query, data_to_insert)
             elif single_or_many == 'single' and take_give_ot_not == 'no data':
-                cursor.execute(sql_querie)
+                cursor.execute(sql_query)
             elif single_or_many == 'many':
-                cursor.executemany(sql_querie, data_to_insert)
+                cursor.executemany(sql_query, data_to_insert)
             elif take_give_ot_not == 'fetchall':
-                cursor.execute(sql_querie)
+                cursor.execute(sql_query)
                 information = cursor.fetchall()
 
                 information = information.copy()
                 logging.info(information)
 
             connection.commit()
-            logging.info(f'Command: {sql_querie}\nResult: successfully')
+            logging.info(f'Command: {sql_query}\nResult: successfully')
 
     except Error as e:
         logging.error("Error while connecting to MySQL: ", e)
